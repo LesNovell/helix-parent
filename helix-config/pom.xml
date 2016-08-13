@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.helix</groupId>
+        <artifactId>helix-parent</artifactId>
+        <version>0.9.8-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>helix-config</artifactId>
+
+    <prerequisites>
+        <maven>3.2.0</maven>
+    </prerequisites>
+
+    <properties>
+        <snakeyaml.version>1.14</snakeyaml.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.helix</groupId>
+            <artifactId>helix-core</artifactId>
+            <version>0.9.8-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>${snakeyaml.version}</version>
+        </dependency>
+    </dependencies>
+</project>

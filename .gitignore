@@ -1,0 +1,51 @@
+##### Java #####
+.class
+bin/
+
+#### IDEA intellij #####
+.idea/
+*.iml
+*.iws
+
+##### eclipse #####
+.project
+.classpath
+.settings/
+.externalToolBuilders/
+maven-eclipse.xml
+
+#### Netbeans #####
+.nbm/
+.nbm
+nb-configuration.xml
+foo.xml
+
+##### Maven #####
+target/
+log/
+
+##### Vim #####
+.vimrc
+*.sw?
+
+# REQUIRED FOR SERVICE-TEMPLATE:
+# Githash endpoint
+git.properties
+*.versionsBackup
+
+# Operating System Files
+
+*.DS_Store
+Thumbs.db
+*.sw?
+.#*
+*#
+*~
+*.sublime-*
+
+#git, kdiff3
+*.orig
+*.BASE.*
+*.BACKUP.*
+*.LOCAL.*
+*.REMOTE.*

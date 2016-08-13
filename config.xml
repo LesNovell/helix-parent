@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jenkins>
+  <jenkins_xml>
+    <enabled>true</enabled>
+  </jenkins_xml>
+  <jdk>JDK8u25</jdk>
+  <sonar_branch_override>any</sonar_branch_override>
+</jenkins>
