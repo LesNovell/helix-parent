@@ -5,9 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.helix</groupId>
+        <groupId>io.helixservice</groupId>
         <artifactId>helix-parent</artifactId>
-        <version>0.9.8-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>helix-metrics</artifactId>
@@ -23,14 +23,14 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.helix</groupId>
+            <groupId>io.helixservice</groupId>
             <artifactId>helix-core</artifactId>
-            <version>0.9.8-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>com.helix</groupId>
+            <groupId>io.helixservice</groupId>
             <artifactId>helix-rest</artifactId>
-            <version>0.9.8-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
         <!-- For Metrics feature -->
