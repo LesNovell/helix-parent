@@ -128,6 +128,7 @@ public class RestClient {
     /**
      * Perform a request, sending a request body
      *
+     * @param httpMethod http method to use
      * @param uriPath URI endpoint to call
      * @param requestBody Request body object, which will be marshaled using the registered Marshaller
      * @return The un-executed request object
@@ -140,8 +141,8 @@ public class RestClient {
     /**
      * Perform a request, without a request body
      *
+     * @param httpMethod http method to use
      * @param uriPath URI endpoint to call
-     * @param requestBody Request body object, which will be marshaled using the registered Marshaller
      * @return The un-executed request object
      */
     public RestRequest request(HttpMethod httpMethod, String uriPath) {

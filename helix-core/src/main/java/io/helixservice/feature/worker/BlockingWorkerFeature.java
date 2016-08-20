@@ -51,8 +51,8 @@ import io.vertx.core.Vertx;
  * different thread. Only one Blocking Worker thread will be used.
  *
  * <h2>AspectJ Configuration</h2>
- * <li>AspectJ agent must be installed on the Java command line, for example: <pre>-javaagent:aspectjweaver-1.8.8.jar</pre></li>
- * <li>AspectJ aop.xml must contain <pre>&lt;aspect name="io.helixservice.feature.worker.BlockingWorkerAspect"\&gt;</pre></li>
+ * <ul><li>AspectJ agent must be installed on the Java command line, for example: <pre>-javaagent:aspectjweaver-1.8.8.jar</pre></li>
+ * <li>AspectJ aop.xml must contain <pre>&lt;aspect name="io.helixservice.feature.worker.BlockingWorkerAspect"\&gt;</pre></li></ul>
  *
  * <h2>Worker Thread Pool Configuration</h2>
  * By default, 50 threads are created to support concurrent blocking operations.  The thread pool size can

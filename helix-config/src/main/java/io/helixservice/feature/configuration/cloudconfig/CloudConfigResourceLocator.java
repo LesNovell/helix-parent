@@ -22,7 +22,7 @@
  *
  */
 
-package io.helixservice.feature.cloudconfig;
+package io.helixservice.feature.configuration.cloudconfig;
 
 import io.helixservice.feature.configuration.locator.AbstractResourceLocator;
 import io.helixservice.feature.configuration.provider.YamlPropertiesLoader;

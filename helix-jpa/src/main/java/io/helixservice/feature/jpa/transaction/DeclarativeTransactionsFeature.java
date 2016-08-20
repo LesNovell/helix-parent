@@ -43,10 +43,11 @@ import java.util.EmptyStackException;
  * <li>The class with @Transactional must have a field with the type EntityManager. The EntityManager will be injected.</li>
  * <li>When using multiple Persistence Units, add the @PersistenceContext annotation on the EntityManager field to specify which Persistence Unit should be used</li>
  * </ul>
-  <h2>AspectJ Configuration</h2>
+ * <h2>AspectJ Configuration</h2>
+ * <ul>
  * <li>AspectJ agent must be installed on the Java command line, for example: <pre>-javaagent:aspectjweaver-1.8.8.jar</pre></li>
  * <li>AspectJ aop.xml must contain <pre>&lt;aspect name="io.helixservice.feature.jpa.transaction.TransactionalAspect"\&gt;</pre></li>
- *
+ * </ul>
  */
 public class DeclarativeTransactionsFeature extends AbstractFeature {
     public DeclarativeTransactionsFeature() {

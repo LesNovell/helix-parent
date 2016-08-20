@@ -81,7 +81,7 @@ public class Property extends Observable {
 
     /**
      * Set a new unresolved value, marking the observable as changed if it has changed
-     * @param value The non-NULL unresolved value
+     * @param unresolvedValue The non-NULL unresolved value
      */
     public void setUnresolvedValue(String unresolvedValue) {
         if (!unresolvedValue.equals(this.unresolvedValue)) {

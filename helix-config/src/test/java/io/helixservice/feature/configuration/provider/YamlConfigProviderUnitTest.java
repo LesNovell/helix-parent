@@ -42,16 +42,6 @@ public class YamlConfigProviderUnitTest {
 
     private Observable updatedProperty;
 
-    @Test(expected = ConfigProviderException.class)
-    public void testFailToFindBaseYaml() throws Exception {
-        ResourceLocator resourceLocator = mock(ClasspathResourceLocator.class);
-        when(resourceLocator.getStream(Matchers.anyString())).thenReturn(Optional.empty());
-
-        new ConfigProvider(new String[] {"default"}, "my.yaml",
-                0, () -> new ResourceLocator[] {resourceLocator},
-                () -> new PropertyResolver[] {});
-    }
-
     @Test
     public void testLoadsBaseYaml() throws Exception {
         String yamlInput = "nothing: here";

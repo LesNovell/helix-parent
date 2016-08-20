@@ -33,6 +33,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -207,8 +208,9 @@ public class ConfigProvider {
                     Map properties = propertiesLoader.getFlattenedProperties();
                     if (properties != null) {
                         countPropFileLoaded++;
+
                         //noinspection unchecked
-                        yamlProperties.putAll(properties);
+                        overlayProperties(properties, yamlProperties);
                     }
                 }
             }
@@ -255,6 +257,23 @@ public class ConfigProvider {
         }
 
         return countPropFileLoaded;
+    }
+
+    private void overlayProperties(Map<String, Object> src, Map<String, Object> dest) {
+
+        // Remove overlaid list properties
+        for (String propertyName : src.keySet()) {
+            int index = propertyName.indexOf("[");
+            String propertyNameNoIndex = index >= 0 ? propertyName.substring(0, index+1) : propertyName;
+            for (Iterator<String> iterator = dest.keySet().iterator(); iterator.hasNext(); ) {
+                String destPropertyName = iterator.next();
+                if (destPropertyName.startsWith(propertyNameNoIndex)) {
+                    iterator.remove();
+                }
+            }
+        }
+
+        dest.putAll(src);
     }
 
     /**
@@ -329,9 +348,7 @@ public class ConfigProvider {
     private void loadInitialPropertiesSet(String propertyFileName) throws ConfigProviderException {
         int propFilesLoadedCount = reloadProperties();
         if (propFilesLoadedCount == 0) {
-            String errorMessage = "No property files were loaded for propertyFileName=" + propertyFileName;
-            LOG.error(errorMessage);
-            throw new ConfigProviderException(errorMessage);
+            LOG.info("No property files were loaded for propertyFileName=" + propertyFileName);
         }
     }
 

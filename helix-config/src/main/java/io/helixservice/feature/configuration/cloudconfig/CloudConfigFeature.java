@@ -22,7 +22,7 @@
  *
  */
 
-package io.helixservice.feature.cloudconfig;
+package io.helixservice.feature.configuration.cloudconfig;
 
 import io.helixservice.core.feature.AbstractFeature;
 import io.helixservice.feature.configuration.ConfigProperty;

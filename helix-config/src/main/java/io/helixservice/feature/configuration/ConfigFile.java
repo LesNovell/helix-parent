@@ -50,7 +50,6 @@ public class ConfigFile {
      * Multiple calls to this method will open and read the file again.
      *
      * @return The input stream
-     * @throws ConfigProviderException if the file cannot be found
      */
     public InputStream readAsInputStream() {
         ConfigProvider configProvider = ConfigProviderFactory.singleton();
@@ -62,7 +61,6 @@ public class ConfigFile {
      * Multiple calls to this method will open and read the file again.
      *
      * @return The configuration file's contents
-     * @throws ConfigProviderException if the file cannot be found
      */
     public String readAsString() {
         ConfigProvider configProvider = ConfigProviderFactory.singleton();

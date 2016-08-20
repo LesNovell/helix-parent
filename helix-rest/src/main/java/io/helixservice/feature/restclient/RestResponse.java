@@ -172,7 +172,6 @@ public class RestResponse<T> {
      * You might want to use this method if you have custom marshalling
      * for error responses.
      *
-     * @param encoding String encoding (ex, utf-8)
      * @return The response body represented as a byte array
      */
     public byte[] getBodyAsBytes() {

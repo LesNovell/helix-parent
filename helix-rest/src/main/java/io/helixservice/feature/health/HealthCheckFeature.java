@@ -33,14 +33,14 @@ import java.time.Clock;
 
 /**
  * Health check adds a simple health check page indicating the status of the server.
- * <b>
- *      <li>HEAD|GET /health/healthcheck    => HTTP 200=Healthy, HTTP 599=Offline</li>
- *      <li>HEAD|GET /health/heartbeat      => HTTP 200=Healthy, HTTP 599=Offline</li>
- * </b>
+ *     <ul>
+ *      <li>HEAD|GET /health/healthcheck    HTTP 200=Healthy, HTTP 599=Offline</li>
+ *      <li>HEAD|GET /health/heartbeat      HTTP 200=Healthy, HTTP 599=Offline</li>
+ *     </ul>
  * <p>
  * Health check endpoint also supports marking the server as offline by sending:
  * <br>
- * <b>GET /health/heartbeat?offline=(true|false)&password=(health-check.forced-down-password)</b>
+ * <b>GET /health/heartbeat?offline=(true|false)&amp;password=(health-check.forced-down-password)</b>
  * <p>
  * Password must match the configured password in the application.yml file.
  *

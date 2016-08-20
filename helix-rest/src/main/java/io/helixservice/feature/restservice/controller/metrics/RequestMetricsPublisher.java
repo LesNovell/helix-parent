@@ -31,8 +31,6 @@ import io.vertx.core.eventbus.EventBus;
  * <p>
  * The response duration, response size, response code, and path are published.
  * Metrics published here are picked up by the MetricsFeature for aggregation and reporting.
- *
- * @see io.helixservice.feature.metrics.MetricsFeature
  */
 public class RequestMetricsPublisher {
     private EventBus eventBus;

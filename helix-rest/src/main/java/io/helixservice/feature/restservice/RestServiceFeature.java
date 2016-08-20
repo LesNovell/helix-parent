@@ -35,11 +35,13 @@ import java.util.function.Supplier;
  * Rest Service Feature provides non-blocking HTTP Server support
  * <p>
  * Features include:
+ * <ul>
  * <li>Vert.x-based async HTTP Server</li>
  * <li>Controllers objects that define 1 or more REST endpoints</li>
  * <li>Configuration of Controllers via annotation or by Lambda definition</li>
  * <li>Filter support for intercepting REST requests</li>
  * <li>Error handling support, </li>
+ * </ul>
  */
 public class RestServiceFeature extends AbstractFeature {
     private Router router;

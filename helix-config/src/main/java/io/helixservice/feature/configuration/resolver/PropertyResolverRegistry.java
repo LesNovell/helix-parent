@@ -60,7 +60,7 @@ public class PropertyResolverRegistry implements Supplier<PropertyResolver[]> {
 
     /**
      * Set all the PropertyResolver, removing any existing ones.
-     * @param propertyResolver List of all PropertyResolvers to register
+     * @param propertyResolvers List of all PropertyResolvers to register
      */
     public static void set(Collection<PropertyResolver> propertyResolvers) {
         INSTANCE.resolvers.clear();

@@ -20,7 +20,7 @@
  *
  */
 
-package io.helixservice.feature.cloudconfig;
+package io.helixservice.feature.configuration.cloudconfig;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -49,7 +49,7 @@ public class CloudConfigDecrypt {
      * @param name property or filename for reference/logging
      * @param encryptedValue Encrypted string
      * @param cloudConfigUri URI of the Cloud Config server
-     * @param httpBasicHeader HTTP Basic header containing username & password for Cloud Config server
+     * @param httpBasicHeader HTTP Basic header containing username and password for Cloud Config server
      * @return
      */
     public static String decrypt(String name, String encryptedValue, String cloudConfigUri, String httpBasicHeader) {

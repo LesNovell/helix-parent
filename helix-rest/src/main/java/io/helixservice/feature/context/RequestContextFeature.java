@@ -80,9 +80,10 @@ import java.util.function.Supplier;
  * way to specify which context variables should always be logged.
  *
  * <h2>AspectJ Configuration</h2>
+ * <ul>
  * <li>AspectJ agent must be installed on the Java command line, for example: <pre>-javaagent:aspectjweaver-1.8.8.jar</pre></li>
  * <li>AspectJ aop.xml must contain <pre>&lt;aspect name="io.helixservice.feature.context.RequestContextAspect"\&gt;</pre></li>
- *
+ * </ul>
  */
 public class RequestContextFeature extends AbstractFeature {
     List<String> captureHeaders = new ArrayList<>();

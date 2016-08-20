@@ -94,7 +94,7 @@ public class FilterContext {
      * Get a filter variable value
      *
      * @param name Name of the variable
-     * @param  T type of the value returned
+     * @param <T> type of the value returned
      * @return A value, or null if one does not exist
      */
     @SuppressWarnings("unchecked")
