@@ -8,6 +8,7 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <url>http://helixservice.io</url>
+    <name>Helix Service</name>
     <description>Helix Service Template for Vert.x non-blocking services</description>
 
     <prerequisites>
@@ -639,4 +640,10 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
+
+    <scm>
+        <connection>scm:git:https://github.com/LesNovell/helix-parent.git</connection>
+        <developerConnection>scm:git@github.com:LesNovell/helix-parent.git</developerConnection>
+        <url>https://github.com/LesNovell/helix-parent</url>
+    </scm>
 </project>
