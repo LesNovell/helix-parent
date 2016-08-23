@@ -18,7 +18,9 @@ import io.helixservice.feature.configuration.provider.ConfigProviderPropertiesCh
 import io.helixservice.feature.configuration.provider.Property;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -97,8 +99,13 @@ public class ConfigPropertyList implements ConfigProviderPropertiesChangedListen
 
     @Override
     public void configChanged(List<String> newProperties, List<String> changedProperties, List<String> deletedProperties) {
-        for (String changedProperty : changedProperties) {
-            if (changedProperty.startsWith(propertyName + "[")) {
+        Set<String> modifiedProperties = new HashSet<>();
+        modifiedProperties.addAll(newProperties);
+        modifiedProperties.addAll(changedProperties);
+        modifiedProperties.addAll(deletedProperties);
+
+        for (String modifiedProperty : modifiedProperties) {
+            if (modifiedProperty.startsWith(propertyName + "[")) {
                 rebuildList();
                 configPropertyListChangedListener.propertyChanged(this);
                 break;
