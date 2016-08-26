@@ -62,7 +62,7 @@ public class ConfigProvider {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigProvider.class);
 
     private String fileName;
-    private final String[] profilePaths;
+    private String[] profilePaths;
     private final Supplier<ResourceLocator[]> resourceLocators;
     private final Supplier<PropertyResolver[]> propertyResolvers;
 
@@ -97,6 +97,28 @@ public class ConfigProvider {
     }
 
     /**
+     * Set the paths to search for configuration files
+     *
+     * @param profilePaths List of configuration profile paths to load in order (ex: default, prod)
+     * @param reloadImmediately If true, forces reloading of properties before this method returns
+     */
+    public synchronized void setProfilePaths(String[] profilePaths, boolean reloadImmediately) {
+        this.profilePaths = profilePaths;
+        if (reloadImmediately) {
+            reloadProperties();
+        }
+    }
+
+    /**
+     * Get the currently configured paths to find configuration files
+     *
+     * @return Path list as an array, ex: ["default", "prod"]
+     */
+    public synchronized String[] getProfilePaths() {
+        return profilePaths;
+    }
+
+    /**
      * Read a resource by name from one of the ResourceLocators
      *
      * @param name Resource name
@@ -107,7 +129,7 @@ public class ConfigProvider {
         // Find a file in this order: CloudConfig (.secure), FileSystem, Classpath
         ResourceLocator[] resourceLocators = this.resourceLocators.get();
         for (int i = resourceLocators.length - 1; i >= 0; i--) {
-            for (String profilePath : profilePaths) {
+            for (String profilePath : getProfilePaths()) {
                 String resourcePath = profilePath + File.separator + name;
 
                 Optional<InputStream> stream = resourceLocators[i].getStream(resourcePath);
@@ -131,7 +153,7 @@ public class ConfigProvider {
         // Find a file in this order: CloudConfig (.secure), FileSystem, Classpath
         ResourceLocator[] resourceLocators = this.resourceLocators.get();
         for (int i = resourceLocators.length - 1; i >= 0; i--) {
-            for (String profilePath : profilePaths) {
+            for (String profilePath : getProfilePaths()) {
                 String resourcePath = profilePath + File.separator + name;
 
                 Optional<String> string = resourceLocators[i].getString(resourcePath);
@@ -201,7 +223,7 @@ public class ConfigProvider {
         Map<String, Object> yamlProperties = new HashMap<>();
 
         for (ResourceLocator resourceLocator : resourceLocators.get()) {
-            for (String profilePath : profilePaths) {
+            for (String profilePath : getProfilePaths()) {
                 Optional<InputStream> streamFromClasspath = resourceLocator.getStream(profilePath + File.separator + fileName);
                 if (streamFromClasspath != null && streamFromClasspath.isPresent()) {
                     YamlPropertiesLoader propertiesLoader = new YamlPropertiesLoader(streamFromClasspath.get());
@@ -355,7 +377,7 @@ public class ConfigProvider {
     private List<String> searchLocationsForDebugging(String name) {
         List<String> searchLocations = new ArrayList<>();
         for (ResourceLocator resourceLocator : resourceLocators.get()) {
-            for (String profilePath : profilePaths) {
+            for (String profilePath : getProfilePaths()) {
                 if (name.startsWith("/")) {
                     name = name.substring(1);
                 }
