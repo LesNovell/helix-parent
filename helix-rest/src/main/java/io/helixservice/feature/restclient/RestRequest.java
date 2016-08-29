@@ -286,14 +286,14 @@ public class RestRequest {
                 if (!first) {
                     result.append("&");
                 }
-                result.append(paramEntry.getKey());
+                result.append(URLEncoder.encode(paramEntry.getKey(), "UTF-8"));
                 result.append("=");
-                result.append(paramEntry.getValue());
+                result.append(URLEncoder.encode(paramEntry.getValue(), "UTF-8"));
                 first = false;
             }
         }
 
-        return URLEncoder.encode(result.toString(), "UTF-8");
+        return result.toString();
     }
 
     private String replaceUrlVars(String urlPath) {
