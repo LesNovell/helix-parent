@@ -1,14 +1,3 @@
-/*
- *  Copyright (c) 2016 Les Novell
- *  ------------------------------------------------------
- *   All rights reserved. This program and the accompanying materials
- *   are made available under the terms of the Eclipse Public License v1.0
- *   and Apache License v2.0 which accompanies this distribution.
- *
- *      The Apache License v2.0 is available at
- *      http://www.opensource.org/licenses/apache2.0.php
- *
- */
 
 /*
  * @author Les Novell
@@ -26,6 +15,7 @@ package io.helixservice.feature.configuration.dynamo;
 
 import io.helixservice.core.feature.AbstractFeature;
 import io.helixservice.feature.configuration.ConfigProperty;
+import io.helixservice.feature.configuration.provider.ConfigProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,26 +47,31 @@ import java.util.Optional;
 public class DynamoConfigFeature extends AbstractFeature {
     private static Logger LOG = LoggerFactory.getLogger(DynamoConfigFeature.class);
 
-    public DynamoConfigFeature() {
-        ConfigProperty dynamoConfigEnabled = new ConfigProperty("dynamo.config.enabled", "true");
+    public DynamoConfigFeature(ConfigProvider configProvider) {
+        ConfigProperty dynamoConfigEnabled = new ConfigProperty(configProvider, "dynamo.config.enabled", "true");
 
         if (dynamoConfigEnabled.isTrue()) {
             LOG.info("DynamoDB Configuration feature is enabled");
 
-            String clientEndpoint = new ConfigProperty("dynamo.config.client.endpoint").getValue();
+            String clientEndpoint = new ConfigProperty(configProvider, "dynamo.config.client.endpoint").getValue();
             String accessKey = Optional.ofNullable(System.getenv("AWS_ACCESS_KEY_ID"))
-                    .orElse(new ConfigProperty("dynamo.config.access.key", "").getValue());
+                    .orElse(new ConfigProperty(configProvider, "dynamo.config.access.key", "").getValue());
             String secretKey = Optional.ofNullable(System.getenv("AWS_SECRET_ACCESS_KEY"))
-                    .orElse(new ConfigProperty("dynamo.config.secret.key", "").getValue());
+                    .orElse(new ConfigProperty(configProvider, "dynamo.config.secret.key", "").getValue());
 
-            String tableName = new ConfigProperty("dynamo.config.table.name", "ServiceConfiguration").getValue();
-            String serviceName = new ConfigProperty("dynamo.config.service.name", "default").getValue();
-            boolean createTable = new ConfigProperty("dynamo.config.create.table", "true").isTrue();
+            String tableName = new ConfigProperty(configProvider, "dynamo.config.table.name", "ServiceConfiguration").getValue();
+            String serviceName = new ConfigProperty(configProvider, "dynamo.config.service.name", "default").getValue();
+            boolean createTable = new ConfigProperty(configProvider, "dynamo.config.create.table", "true").isTrue();
 
             register(new DynamoConfigResourceLocator(clientEndpoint, accessKey, secretKey, tableName, serviceName, createTable));
         } else {
             LOG.warn("DynamoDB Configuration feature is disabled, because dynamo.config.enabled=" + dynamoConfigEnabled.getValue());
         }
+    }
+
+    @Override
+    public boolean shouldStartDuringBootstrapPhase() {
+        return true;
     }
 
     public DynamoConfigFeature(String clientEndpoint, String accessKey, String secretKey,

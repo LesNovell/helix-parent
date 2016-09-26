@@ -1,19 +1,7 @@
-/*
- *  Copyright (c) 2016 Les Novell
- *  ------------------------------------------------------
- *   All rights reserved. This program and the accompanying materials
- *   are made available under the terms of the Eclipse Public License v1.0
- *   and Apache License v2.0 which accompanies this distribution.
- *
- *      The Apache License v2.0 is available at
- *      http://www.opensource.org/licenses/apache2.0.php
- *
- */
 
 package io.helixservice.feature.configuration;
 
 import io.helixservice.feature.configuration.provider.ConfigProvider;
-import io.helixservice.feature.configuration.provider.ConfigProviderFactory;
 import io.helixservice.feature.configuration.provider.ConfigProviderPropertiesChangedListener;
 import io.helixservice.feature.configuration.provider.Property;
 
@@ -30,13 +18,14 @@ import java.util.stream.Collectors;
  * configuration or the default configuration.
  */
 public class ConfigPropertyList implements ConfigProviderPropertiesChangedListener {
-    private ConfigProvider configProvider = ConfigProviderFactory.singleton();
     private ConfigPropertyListChangedListener configPropertyListChangedListener;
 
+    private ConfigProvider configProvider;
     private String propertyName;
     private List<Property> properties = new ArrayList<>();
 
-    public ConfigPropertyList(String propertyName) {
+    public ConfigPropertyList(ConfigProvider configProvider, String propertyName) {
+        this.configProvider = configProvider;
         this.propertyName = propertyName;
         rebuildList();
     }

@@ -1,14 +1,3 @@
-/*
- *  Copyright (c) 2016 Les Novell
- *  ------------------------------------------------------
- *   All rights reserved. This program and the accompanying materials
- *   are made available under the terms of the Eclipse Public License v1.0
- *   and Apache License v2.0 which accompanies this distribution.
- *
- *      The Apache License v2.0 is available at
- *      http://www.opensource.org/licenses/apache2.0.php
- *
- */
 
 /*
  * @author Les Novell
@@ -25,9 +14,9 @@
 package io.helixservice.feature.health;
 
 import io.helixservice.core.feature.AbstractFeature;
-import io.helixservice.feature.configuration.ConfigProperty;
 import io.helixservice.feature.configuration.locator.ClasspathResourceLocator;
-import io.helixservice.feature.restservice.controller.component.ControllerComponent;
+import io.helixservice.feature.configuration.provider.ConfigProvider;
+import io.helixservice.feature.restservice.controller.component.Controller;
 
 import java.time.Clock;
 
@@ -46,13 +35,15 @@ import java.time.Clock;
  *
  */
 public class HealthCheckFeature extends AbstractFeature {
-    ConfigProperty forcedDownPassword = new ConfigProperty("health-check.forced-down-password");
 
-    public HealthCheckFeature() {
+
+    public HealthCheckFeature(ConfigProvider configProvider) {
+        String forcedDownPassword = configProvider.propertyByName("health-check.forced-down-password").getValue();
+
         HealthController healthController =
-                new HealthController(new QueryParameterOfflineProcessor(forcedDownPassword.getValue()),
+                new HealthController(new QueryParameterOfflineProcessor(forcedDownPassword),
                         ClasspathResourceLocator.INSTANCE, Clock.systemDefaultZone());
 
-        register(ControllerComponent.fromAnnotationsOn(healthController));
+        register(Controller.fromAnnotationsOn(healthController));
     }
 }

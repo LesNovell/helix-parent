@@ -1,14 +1,3 @@
-/*
- *  Copyright (c) 2016 Les Novell
- *  ------------------------------------------------------
- *   All rights reserved. This program and the accompanying materials
- *   are made available under the terms of the Eclipse Public License v1.0
- *   and Apache License v2.0 which accompanies this distribution.
- *
- *      The Apache License v2.0 is available at
- *      http://www.opensource.org/licenses/apache2.0.php
- *
- */
 
 /*
  * @author Les Novell
@@ -25,7 +14,6 @@
 package io.helixservice.feature.configuration;
 
 import io.helixservice.feature.configuration.provider.ConfigProvider;
-import io.helixservice.feature.configuration.provider.ConfigProviderFactory;
 
 import java.io.InputStream;
 
@@ -33,6 +21,7 @@ import java.io.InputStream;
  * Read a file from any of the registered ResourceLocators
  */
 public class ConfigFile {
+    private ConfigProvider configProvider;
     private String fileName;
 
     /**
@@ -41,7 +30,8 @@ public class ConfigFile {
      *
      * @param fileName Path to the file
      */
-    public ConfigFile(String fileName) {
+    public ConfigFile(ConfigProvider configProvider, String fileName) {
+        this.configProvider = configProvider;
         this.fileName = fileName;
     }
 
@@ -52,7 +42,6 @@ public class ConfigFile {
      * @return The input stream
      */
     public InputStream readAsInputStream() {
-        ConfigProvider configProvider = ConfigProviderFactory.singleton();
         return configProvider.resourceAsInputStream(fileName);
     }
 
@@ -63,7 +52,6 @@ public class ConfigFile {
      * @return The configuration file's contents
      */
     public String readAsString() {
-        ConfigProvider configProvider = ConfigProviderFactory.singleton();
         return configProvider.resourceAsString(fileName);
     }
 }

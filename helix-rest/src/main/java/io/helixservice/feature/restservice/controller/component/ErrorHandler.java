@@ -1,14 +1,3 @@
-/*
- *  Copyright (c) 2016 Les Novell
- *  ------------------------------------------------------
- *   All rights reserved. This program and the accompanying materials
- *   are made available under the terms of the Eclipse Public License v1.0
- *   and Apache License v2.0 which accompanies this distribution.
- *
- *      The Apache License v2.0 is available at
- *      http://www.opensource.org/licenses/apache2.0.php
- *
- */
 
 /*
  * @author Les Novell
@@ -25,7 +14,7 @@
 package io.helixservice.feature.restservice.controller.component;
 
 import io.helixservice.core.component.Component;
-import io.helixservice.feature.restservice.error.ErrorHandler;
+import io.helixservice.feature.restservice.error.ErrorHandlerFunction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,18 +22,18 @@ import java.util.List;
 /**
  * Error Handler Configuration Component
  */
-public class ErrorHandlerComponent implements Component {
-    List<ErrorHandler> errorHandlers = new ArrayList<>();
+public class ErrorHandler implements Component {
+    List<ErrorHandlerFunction> errorHandlers = new ArrayList<>();
 
-    private ErrorHandlerComponent() {
+    private ErrorHandler() {
     }
 
     /**
      * Create an error handler for all REST paths
      * @return Error handler component
      */
-    public static ErrorHandlerComponent forAllPaths() {
-        return new ErrorHandlerComponent();
+    public static ErrorHandler forAllPaths() {
+        return new ErrorHandler();
     }
 
     /**
@@ -55,7 +44,7 @@ public class ErrorHandlerComponent implements Component {
      * @param <T> Exception type to handle
      * @return The ErrorHandlerComponent for this function
      */
-    public <T> ErrorHandlerComponent handle(ErrorHandler<T> errorHandler) {
+    public <T> ErrorHandler handle(ErrorHandlerFunction<T> errorHandler) {
         errorHandlers.add(errorHandler);
         return this;
     }

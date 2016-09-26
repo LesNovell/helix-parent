@@ -1,14 +1,3 @@
-/*
- *  Copyright (c) 2016 Les Novell
- *  ------------------------------------------------------
- *   All rights reserved. This program and the accompanying materials
- *   are made available under the terms of the Eclipse Public License v1.0
- *   and Apache License v2.0 which accompanies this distribution.
- *
- *      The Apache License v2.0 is available at
- *      http://www.opensource.org/licenses/apache2.0.php
- *
- */
 
 /*
  * @author Les Novell
@@ -41,9 +30,11 @@ public interface Component {
      * Return a human readable short description of this component.
      * This will be used to log or describe each registered component.
      *
-     * @return The component description; may be null
+     * @return The component description; defaults to null
      */
-    String getComponentDescription();
+    default String getComponentDescription() {
+        return null;
+    }
 
     Component[] EMPTY = new Component[0];
     /**

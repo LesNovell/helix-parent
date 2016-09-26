@@ -1,14 +1,3 @@
-/*
- *  Copyright (c) 2016 Les Novell
- *  ------------------------------------------------------
- *   All rights reserved. This program and the accompanying materials
- *   are made available under the terms of the Eclipse Public License v1.0
- *   and Apache License v2.0 which accompanies this distribution.
- *
- *      The Apache License v2.0 is available at
- *      http://www.opensource.org/licenses/apache2.0.php
- *
- */
 
 /*
  * @author Les Novell
@@ -25,8 +14,6 @@
 package io.helixservice.feature.restservice.controller.component;
 
 import io.helixservice.core.component.Component;
-import io.helixservice.feature.restservice.controller.annotation.Controller;
-import io.helixservice.feature.restservice.controller.annotation.Endpoint;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -44,21 +31,21 @@ import java.util.List;
  * Using the ComponentRegistry it is possible to enumerate
  * all the controllers and their associated endpoints.
  */
-public class ControllerComponent implements Component {
+public class Controller implements Component {
     public static final String TYPE_NAME = "Controller";
 
     private Object controller;
-    private List<EndpointComponent> endpointComponentList;
+    private List<Endpoint> endpointList;
 
     /**
      * Create a Controller Component
      *
      * @param controller Controller object
-     * @param endpointComponentList List of EndpointComponents in this Controller
+     * @param endpointList List of EndpointComponents in this Controller
      */
-    public ControllerComponent(Object controller, List<EndpointComponent> endpointComponentList) {
+    public Controller(Object controller, List<Endpoint> endpointList) {
         this.controller = controller;
-        this.endpointComponentList = endpointComponentList;
+        this.endpointList = endpointList;
     }
 
     /**
@@ -69,32 +56,34 @@ public class ControllerComponent implements Component {
      * @return ControllerComponent that was created
      * @throws IllegalArgumentException if the controller is missing @Controller annotation
      */
-    public static ControllerComponent fromAnnotationsOn(Object controller)  {
-        List<EndpointComponent> endpointComponentList = new ArrayList<>();
+    public static Controller fromAnnotationsOn(Object controller)  {
+        List<Endpoint> endpointList = new ArrayList<>();
 
-        Controller controllerAnnotation = controller.getClass().getAnnotation(Controller.class);
+        io.helixservice.feature.restservice.controller.annotation.Controller
+                controllerAnnotation = controller.getClass().getAnnotation(io.helixservice.feature.restservice.controller.annotation.Controller.class);
         if (controllerAnnotation != null) {
             Method[] methods = controller.getClass().getMethods();
 
             for (Method method : methods) {
-                Endpoint annotation = method.getAnnotation(Endpoint.class);
+                io.helixservice.feature.restservice.controller.annotation.Endpoint
+                        annotation = method.getAnnotation(io.helixservice.feature.restservice.controller.annotation.Endpoint.class);
                 if (annotation != null) {
-                    endpointComponentList.add(EndpointComponent.forPath(annotation.value(), annotation.methods(), method, controller));
+                    endpointList.add(Endpoint.forPath(annotation.value(), annotation.methods(), method, controller));
                 }
             }
         } else {
             throw new IllegalArgumentException("Controller className=" + controller + " should have @Controller annotation present");
         }
 
-        return new ControllerComponent(controller, endpointComponentList);
+        return new Controller(controller, endpointList);
     }
 
     public Object getController() {
         return controller;
     }
 
-    public List<EndpointComponent> getEndpointComponentList() {
-        return endpointComponentList;
+    public List<Endpoint> getEndpointList() {
+        return endpointList;
     }
 
     @Override
@@ -104,7 +93,7 @@ public class ControllerComponent implements Component {
 
     @Override
     public Component[] getContainedComponents() {
-        return endpointComponentList.toArray(new Component[endpointComponentList.size()]);
+        return endpointList.toArray(new Component[endpointList.size()]);
     }
 
     @Override

@@ -1,14 +1,3 @@
-/*
- *  Copyright (c) 2016 Les Novell
- *  ------------------------------------------------------
- *   All rights reserved. This program and the accompanying materials
- *   are made available under the terms of the Eclipse Public License v1.0
- *   and Apache License v2.0 which accompanies this distribution.
- *
- *      The Apache License v2.0 is available at
- *      http://www.opensource.org/licenses/apache2.0.php
- *
- */
 
 /*
  * @author Les Novell
@@ -24,9 +13,8 @@
 
 package io.helixservice.feature.configuration;
 
-import io.helixservice.feature.configuration.provider.ConfigProviderPropertiesChangedListener;
 import io.helixservice.feature.configuration.provider.ConfigProvider;
-import io.helixservice.feature.configuration.provider.ConfigProviderFactory;
+import io.helixservice.feature.configuration.provider.ConfigProviderPropertiesChangedListener;
 import io.helixservice.feature.configuration.provider.Property;
 
 import java.util.ArrayList;
@@ -49,8 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * configuration or the default configuration.
  */
 public class ConfigProperties implements ConfigProviderPropertiesChangedListener {
-    ConfigProvider configProvider = ConfigProviderFactory.singleton();
-
+    private ConfigProvider configProvider;
     private String propertyPrefix;
     private Map<String, Property> propertiesMap = new ConcurrentHashMap<>();
     private ConfigPropertiesChangedListener configPropertiesChangedListener;
@@ -60,7 +47,8 @@ public class ConfigProperties implements ConfigProviderPropertiesChangedListener
      *
      * @param propertyPrefix
      */
-    public ConfigProperties(String propertyPrefix) {
+    public ConfigProperties(ConfigProvider configProvider, String propertyPrefix) {
+        this.configProvider = configProvider;
         this.propertyPrefix = propertyPrefix;
         loadProperties();
         configProvider.addPropertiesChangedListener(this);

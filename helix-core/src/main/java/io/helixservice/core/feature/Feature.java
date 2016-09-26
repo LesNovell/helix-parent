@@ -1,14 +1,3 @@
-/*
- *  Copyright (c) 2016 Les Novell
- *  ------------------------------------------------------
- *   All rights reserved. This program and the accompanying materials
- *   are made available under the terms of the Eclipse Public License v1.0
- *   and Apache License v2.0 which accompanies this distribution.
- *
- *      The Apache License v2.0 is available at
- *      http://www.opensource.org/licenses/apache2.0.php
- *
- */
 
 /*
  * @author Les Novell
@@ -24,8 +13,9 @@
 
 package io.helixservice.core.feature;
 
+import io.helixservice.core.component.Component;
 import io.helixservice.core.component.ComponentRegistry;
-import io.helixservice.core.server.Server;
+import io.helixservice.core.container.Container;
 import org.slf4j.Logger;
 
 /**
@@ -44,13 +34,31 @@ import org.slf4j.Logger;
  * </ul>
  * <p>
  */
-public interface Feature extends ComponentRegistry {
+public interface Feature extends ComponentRegistry, Component {
+    String COMPONENT_TYPE = "Feature";
+
+    @Override
+    default String getComponentType() {
+        return Feature.COMPONENT_TYPE;
+    }
+
     /**
      * Returns the name of this feature.
      *
      * @return Feature name. By default, this is the Java class name.
      */
     String getFeatureName();
+
+    /**
+     * Bootstrap features usually reference no other features,
+     * and need to be installed prior to other core features.
+     * The default value is false.
+     *
+     * @return true If this feature must be started during the Helix bootstrap phase
+     */
+    default boolean shouldStartDuringBootstrapPhase() {
+        return false;
+    }
 
     /**
      * Logs the feature configuration to the provided logger.
@@ -72,9 +80,9 @@ public interface Feature extends ComponentRegistry {
      * and allocate resources during the start call.  Blocking operations
      * are allowed in this method.
      *
-     * @param server Helix Server that is starting up
+     * @param container Helix Server that is starting up
      */
-    void start(Server server);
+    void start(Container container);
 
     /**
      * Called by Helix Server when the server going to stop.
@@ -86,9 +94,9 @@ public interface Feature extends ComponentRegistry {
      * There will be a configurable delay between the finish and stop lifecycle
      * callbacks to enable the server to finish in-flight requests.
      *
-     * @param server Helix Server that is finishing in-flight requests
+     * @param container Helix Server that is finishing in-flight requests
      */
-    void finish(Server server);
+    void finish(Container container);
 
     /**
      * Called by Helix Server when the server has stopped.
@@ -97,7 +105,7 @@ public interface Feature extends ComponentRegistry {
      * registered with Helix. Features must release all owned resources at this point.
      * Blocking operations are allowed in this method.
      *
-     * @param server Helix Server that is being stopped
+     * @param container Helix Server that is being stopped
      */
-    void stop(Server server);
+    void stop(Container container);
 }

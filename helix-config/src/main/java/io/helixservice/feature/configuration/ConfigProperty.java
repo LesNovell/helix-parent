@@ -1,16 +1,4 @@
 /*
- *  Copyright (c) 2016 Les Novell
- *  ------------------------------------------------------
- *   All rights reserved. This program and the accompanying materials
- *   are made available under the terms of the Eclipse Public License v1.0
- *   and Apache License v2.0 which accompanies this distribution.
- *
- *      The Apache License v2.0 is available at
- *      http://www.opensource.org/licenses/apache2.0.php
- *
- */
-
-/*
  * @author Les Novell
  *
  *   All rights reserved. This program and the accompanying materials
@@ -24,10 +12,9 @@
 
 package io.helixservice.feature.configuration;
 
-import io.helixservice.feature.configuration.provider.ConfigProviderPropertiesChangedListener;
 import io.helixservice.feature.configuration.provider.ConfigProvider;
+import io.helixservice.feature.configuration.provider.ConfigProviderPropertiesChangedListener;
 import io.helixservice.feature.configuration.provider.ConfigProviderException;
-import io.helixservice.feature.configuration.provider.ConfigProviderFactory;
 import io.helixservice.feature.configuration.provider.Property;
 
 import java.util.List;
@@ -39,9 +26,9 @@ import java.util.List;
  * configuration or the default configuration.
  */
 public class ConfigProperty implements ConfigProviderPropertiesChangedListener {
-    private ConfigProvider configProvider = ConfigProviderFactory.singleton();
     private ConfigPropertyChangedListener configPropertyChangedListener;
 
+    private ConfigProvider configProvider;
     private String propertyName;
     private String defaultValue;
     private Property property;
@@ -52,7 +39,8 @@ public class ConfigProperty implements ConfigProviderPropertiesChangedListener {
      * @param propertyName Name of property to load
      * @throws ConfigProviderException if the property does not exist
      */
-    public ConfigProperty(String propertyName) {
+    public ConfigProperty(ConfigProvider configProvider, String propertyName) {
+        this.configProvider = configProvider;
         this.propertyName = propertyName;
         loadProperty();
         configProvider.addPropertiesChangedListener(this);
@@ -64,7 +52,8 @@ public class ConfigProperty implements ConfigProviderPropertiesChangedListener {
      * @param propertyName Name of the property to load
      * @param defaultValue Default value of this property if it does not exist
      */
-    public ConfigProperty(String propertyName, String defaultValue) {
+    public ConfigProperty(ConfigProvider configProvider, String propertyName, String defaultValue) {
+        this.configProvider = configProvider;
         this.propertyName = propertyName;
         this.defaultValue = defaultValue;
         loadProperty();

@@ -1,14 +1,3 @@
-/*
- *  Copyright (c) 2016 Les Novell
- *  ------------------------------------------------------
- *   All rights reserved. This program and the accompanying materials
- *   are made available under the terms of the Eclipse Public License v1.0
- *   and Apache License v2.0 which accompanies this distribution.
- *
- *      The Apache License v2.0 is available at
- *      http://www.opensource.org/licenses/apache2.0.php
- *
- */
 
 /*
  * @author Les Novell
@@ -24,10 +13,11 @@
 
 package io.helixservice.feature.jpa;
 
+import io.helixservice.core.container.Container;
 import io.helixservice.core.feature.AbstractFeature;
-import io.helixservice.core.server.Server;
 import io.helixservice.feature.configuration.ConfigProperties;
 import io.helixservice.feature.configuration.ConfigProperty;
+import io.helixservice.feature.configuration.provider.ConfigProvider;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,24 +53,27 @@ public class JpaHibernateFeature extends AbstractFeature {
     /**
      * Create a new JPA Hibernate feature as a default persistence unit
      */
-    public JpaHibernateFeature() {
-        this(DEFAULT_PERSISTENCE_UNIT_NAME,
-                new ConfigProperties("jpa.provider").toMapOfProperties(true),
-                new ConfigProperty("jpa.entity-packages").getValue());
+    public JpaHibernateFeature(ConfigProvider configProvider) {
+        this.persistenceUnitName = DEFAULT_PERSISTENCE_UNIT_NAME;
+        this.persistenceProviderProperties = new ConfigProperties(configProvider, "jpa.provider").toMapOfProperties(true);
+        this.packagesToScanForEntities = new ConfigProperty(configProvider, "jpa.entity-packages").getValue();
+//        this(DEFAULT_PERSISTENCE_UNIT_NAME,
+//                new ConfigProperties(configProvider, "jpa.provider").toMapOfProperties(true),
+//                new ConfigProperty(configProvider, "jpa.entity-packages").getValue());
     }
 
-    /**
-     * Create a new JPA Hibernate feature, with custom persistence unit name.
-     *
-     * @param persistenceUnitName Unique persistence unit name
-     * @param persistenceProviderProperties Map of properties that will be passed to Hibernate
-     * @param packagesToScanForEntities List of packages to scan for entities
-     */
-    public JpaHibernateFeature(String persistenceUnitName, Map persistenceProviderProperties, String packagesToScanForEntities) {
-        this.persistenceUnitName = persistenceUnitName;
-        this.persistenceProviderProperties = persistenceProviderProperties;
-        this.packagesToScanForEntities = packagesToScanForEntities;
-    }
+//    /**
+//     * Create a new JPA Hibernate feature, with custom persistence unit name.
+//     *
+//     * @param persistenceUnitName Unique persistence unit name
+//     * @param persistenceProviderProperties Map of properties that will be passed to Hibernate
+//     * @param packagesToScanForEntities List of packages to scan for entities
+//     */
+//    private JpaHibernateFeature(String persistenceUnitName, Map persistenceProviderProperties, String packagesToScanForEntities) {
+//        this.persistenceUnitName = persistenceUnitName;
+//        this.persistenceProviderProperties = persistenceProviderProperties;
+//        this.packagesToScanForEntities = packagesToScanForEntities;
+//    }
 
     /**
      * Lookup the default entity manager factory, if only one persistence unit is defined.
@@ -105,10 +98,10 @@ public class JpaHibernateFeature extends AbstractFeature {
     /**
      * Start the Hibernate JPA Persistence unit
      *
-     * @param server Helix server
+     * @param container Helix server
      */
     @Override
-    public void start(Server server) {
+    public void start(Container container) {
         HibernatePersistenceUnitInfo persistenceUnit = new HibernatePersistenceUnitInfo(persistenceUnitName);
         setupProperties(persistenceUnit, persistenceProviderProperties);
         setupPackagesToScan(persistenceUnit, packagesToScanForEntities);
@@ -120,10 +113,10 @@ public class JpaHibernateFeature extends AbstractFeature {
      * Stop the Hibernate JPA Persistence unit,
      * releasing resources and connections
      *
-     * @param server Helix server
+     * @param container Helix server
      */
     @Override
-    public void stop(Server server) {
+    public void stop(Container container) {
         EntityManagerFactory entityManagerFactory = EM_FACTORY_MAP.get(persistenceUnitName);
         if (entityManagerFactory != null) {
             entityManagerFactory.close();

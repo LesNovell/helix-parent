@@ -1,14 +1,3 @@
-/*
- *  Copyright (c) 2016 Les Novell
- *  ------------------------------------------------------
- *   All rights reserved. This program and the accompanying materials
- *   are made available under the terms of the Eclipse Public License v1.0
- *   and Apache License v2.0 which accompanies this distribution.
- *
- *      The Apache License v2.0 is available at
- *      http://www.opensource.org/licenses/apache2.0.php
- *
- */
 
 /*
  * @author Les Novell
@@ -28,7 +17,8 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import io.helixservice.core.component.Component;
-import io.helixservice.core.server.Server;
+import io.helixservice.core.component.ComponentRegistry;
+import io.helixservice.core.container.Container;
 import org.slf4j.Logger;
 
 import java.lang.reflect.Method;
@@ -43,7 +33,7 @@ import java.util.List;
  * as it provides common functionality and default implementations.
  */
 public abstract class AbstractFeature implements Feature {
-    private Multimap<String, Component> registrationMap = ArrayListMultimap.create();
+    private Multimap<String, Component> componentsMap = ArrayListMultimap.create();
     private String featureName;
 
     /**
@@ -51,6 +41,7 @@ public abstract class AbstractFeature implements Feature {
      */
     public AbstractFeature() {
         this.featureName = getClass().getSimpleName();
+        register(this); // Register this feature component, enables finding features dependency resolution
     }
 
     /**
@@ -60,6 +51,33 @@ public abstract class AbstractFeature implements Feature {
      */
     public AbstractFeature(String featureName) {
         this.featureName = featureName;
+    }
+
+    /**
+     * Register component(s) created and owned by this feature
+     * <p>
+     * Components registered here are in a registry local to this feature.
+     * These components will also be automatically aggregated
+     * and registered with the HelixServer top-level registry.
+     * <p>
+     * If a component contains other components, then the entire
+     * tree of components will be registered.
+     *
+     * @param components Components to register
+     */
+    public Feature register(Component... components) {
+        for (Component component : components) {
+            componentsMap.put(component.getComponentType(), component);
+            register(component.getContainedComponents());
+        }
+
+        return this;
+    }
+
+    @Override
+    public ComponentRegistry registerAllFrom(ComponentRegistry registry) {
+        componentsMap.putAll(registry.getComponentMap());
+        return this;
     }
 
     /**
@@ -73,40 +91,29 @@ public abstract class AbstractFeature implements Feature {
     }
 
     /**
-     * Register component(s) created and owned by this feature
-     * <p>
-     * Components registered here are in a registry local to this feature.
-     * These components will also be automatically aggregated
-     * and registered with the HelixServer top-level registry.
-     * <p>
-     * If a component contains other components, then the entire
-     * tree of components will be registered.
-     *
-     * @param componentArray Array of components to register
-     */
-    public void register(Component... componentArray) {
-        for (Component component : componentArray) {
-            registrationMap.put(component.getComponentType(), component);
-            register(component.getContainedComponents());
-        }
-    }
-
-    /**
      * Returns a map of registered components owned by this feature
      *
      * @return The map of components, where key is the component type name.
      */
-    @Override
-    public Multimap<String, Component> getRegistrationMap() {
-        return ArrayListMultimap.create(registrationMap);
+    public Multimap<String, Component> getComponentMap() {
+        return ArrayListMultimap.create(componentsMap);
     }
 
     /**
      * {@inheritDoc}
      */
-    public <T extends Component> Collection<T> findByType(String componentType) {
+    @Override
+    public Collection<Component> findAllComponents() {
+        return componentsMap.values();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <T extends Component> Collection<T> findComponentByType(String componentType) {
         @SuppressWarnings("unchecked")
-        Collection<T> result = (Collection<T>) registrationMap.get(componentType);
+        Collection<T> result = (Collection<T>) componentsMap.get(componentType);
 
         if (result == null) {
             result = Collections.emptyList();
@@ -118,9 +125,10 @@ public abstract class AbstractFeature implements Feature {
     /**
      * {@inheritDoc}
      */
-    public <T extends Component> T findByType(String componentType, T defaultValue) {
+    @Override
+    public <T extends Component> T findComponentByType(String componentType, T defaultValue) {
         //noinspection unchecked
-        return Iterables.getLast((Collection<T>) registrationMap.get(componentType), defaultValue);
+        return Iterables.getLast((Collection<T>) componentsMap.get(componentType), defaultValue);
     }
 
     /**
@@ -141,8 +149,8 @@ public abstract class AbstractFeature implements Feature {
     private void logComponents(Logger logger) {
         List<String> componentDescriptions = new ArrayList<>();
 
-        for (String registrableTypeName : registrationMap.keySet()) {
-            for (Component component : registrationMap.get(registrableTypeName)) {
+        for (String registrableTypeName : componentsMap.keySet()) {
+            for (Component component : componentsMap.get(registrableTypeName)) {
                 String componentDescription = component.getComponentDescription();
                 if (componentDescription != null && !componentDescription.isEmpty()) {
                     componentDescriptions.add("   " + String.format("%1$-15s", registrableTypeName) + " " + componentDescription);
@@ -167,7 +175,7 @@ public abstract class AbstractFeature implements Feature {
      * {@inheritDoc}
      */
     @Override
-    public void start(Server server) {
+    public void start(Container container) {
 
     }
 
@@ -175,7 +183,7 @@ public abstract class AbstractFeature implements Feature {
      * {@inheritDoc}
      */
     @Override
-    public void finish(Server server) {
+    public void finish(Container container) {
 
     }
 
@@ -183,7 +191,7 @@ public abstract class AbstractFeature implements Feature {
      * {@inheritDoc}
      */
     @Override
-    public void stop(Server server) {
+    public void stop(Container container) {
 
     }
 }

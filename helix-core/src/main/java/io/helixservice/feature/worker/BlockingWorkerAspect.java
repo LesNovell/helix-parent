@@ -1,14 +1,3 @@
-/*
- *  Copyright (c) 2016 Les Novell
- *  ------------------------------------------------------
- *   All rights reserved. This program and the accompanying materials
- *   are made available under the terms of the Eclipse Public License v1.0
- *   and Apache License v2.0 which accompanies this distribution.
- *
- *      The Apache License v2.0 is available at
- *      http://www.opensource.org/licenses/apache2.0.php
- *
- */
 
 /*
  * @author Les Novell
@@ -26,7 +15,7 @@ package io.helixservice.feature.worker;
 
 import co.paralleluniverse.fibers.SuspendExecution;
 import co.paralleluniverse.fibers.Suspendable;
-import io.helixservice.core.server.Server;
+import io.helixservice.core.container.Container;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -62,11 +51,11 @@ public class BlockingWorkerAspect {
     /**
      * Capture Helix server reference on BlockingWorkerFeature creation
      *
-     * @param server Helix server
+     * @param container Helix server
      */
-    @Before(value = "execution(public void io.helixservice.feature.worker.BlockingWorkerFeature.start(io.helixservice.core.server.Server)) "
-            + "&& args(server)")
-    public void beforeStartupFeature(Server server) { this.vertx = server.getVertx().get(); }
+    @Before(value = "execution(public void io.helixservice.feature.worker.BlockingWorkerFeature.start(io.helixservice.core.container.Container)) "
+            + "&& args(container)")
+    public void beforeStartupFeature(Container container) { this.vertx = container.getVertx().get(); }
 
     /**
      * Adds code around all methods annotated with @BlockingWorker.

@@ -1,14 +1,3 @@
-/*
- *  Copyright (c) 2016 Les Novell
- *  ------------------------------------------------------
- *   All rights reserved. This program and the accompanying materials
- *   are made available under the terms of the Eclipse Public License v1.0
- *   and Apache License v2.0 which accompanies this distribution.
- *
- *      The Apache License v2.0 is available at
- *      http://www.opensource.org/licenses/apache2.0.php
- *
- */
 
 /*
  * @author Les Novell
@@ -25,7 +14,7 @@
 package io.helixservice.feature.accesslog;
 
 import io.helixservice.core.feature.AbstractFeature;
-import io.helixservice.feature.configuration.ConfigProperty;
+import io.helixservice.feature.configuration.provider.ConfigProvider;
 import io.helixservice.feature.restservice.filter.component.FilterComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,16 +29,16 @@ import org.slf4j.LoggerFactory;
  * </ul>
  */
 public class AccessLogFeature extends AbstractFeature {
-    public AccessLogFeature() {
-        String loggerName = new ConfigProperty("access-log.loggerName").getValue();
-        String accessLogFormatterClassName = new ConfigProperty("access-log.formatter").getValue();
+    public AccessLogFeature(ConfigProvider configProvider) {
+        String loggerName = configProvider.propertyByName("access-log.loggerName").getValue();
+        String accessLogFormatterClassName = configProvider.propertyByName("access-log.formatter").getValue();
 
         try {
+            AccessLogFormatter accessLogFormatter = (AccessLogFormatter)
+                    Class.forName(accessLogFormatterClassName).newInstance();
+            accessLogFormatter.setConfigProvider(configProvider);
+
             Logger logger = LoggerFactory.getLogger(loggerName);
-
-            AccessLogFormatter accessLogFormatter =
-                    (AccessLogFormatter) Class.forName(accessLogFormatterClassName).newInstance();
-
             AccessLogFilter accessLogFilter = new AccessLogFilter(logger, accessLogFormatter);
             register(FilterComponent.filterAllPaths(accessLogFilter));
         } catch (Throwable t) {

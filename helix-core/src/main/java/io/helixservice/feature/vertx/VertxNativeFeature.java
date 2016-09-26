@@ -1,14 +1,3 @@
-/*
- *  Copyright (c) 2016 Les Novell
- *  ------------------------------------------------------
- *   All rights reserved. This program and the accompanying materials
- *   are made available under the terms of the Eclipse Public License v1.0
- *   and Apache License v2.0 which accompanies this distribution.
- *
- *      The Apache License v2.0 is available at
- *      http://www.opensource.org/licenses/apache2.0.php
- *
- */
 
 /*
  * @author Les Novell
@@ -24,7 +13,7 @@
 package io.helixservice.feature.vertx;
 
 import io.helixservice.core.feature.AbstractFeature;
-import io.helixservice.core.server.Server;
+import io.helixservice.core.container.Container;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
@@ -55,12 +44,12 @@ public class VertxNativeFeature extends AbstractFeature {
     private Vertx vertx;
 
     @Override
-    public void start(Server server)  {
-        vertx = server.getVertx().get();
+    public void start(Container container)  {
+        vertx = container.getVertx().get();
     }
 
     @Override
-    public void stop(Server server) {
+    public void stop(Container container) {
         closeHttpClients();
         vertx = null;
     }

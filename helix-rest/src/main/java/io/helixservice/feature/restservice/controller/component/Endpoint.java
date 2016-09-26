@@ -1,14 +1,3 @@
-/*
- *  Copyright (c) 2016 Les Novell
- *  ------------------------------------------------------
- *   All rights reserved. This program and the accompanying materials
- *   are made available under the terms of the Eclipse Public License v1.0
- *   and Apache License v2.0 which accompanies this distribution.
- *
- *      The Apache License v2.0 is available at
- *      http://www.opensource.org/licenses/apache2.0.php
- *
- */
 
 /*
  * @author Les Novell
@@ -25,7 +14,7 @@
 package io.helixservice.feature.restservice.controller.component;
 
 import io.helixservice.core.component.Component;
-import io.helixservice.feature.restservice.controller.Endpoint;
+import io.helixservice.feature.restservice.controller.EndpointHandler;
 import io.helixservice.feature.restservice.controller.HttpMethod;
 
 import java.io.PrintWriter;
@@ -46,13 +35,13 @@ import java.util.Arrays;
  * it is possible to enumerate all the endpoints.
  */
 
-public class EndpointComponent implements Component {
+public class Endpoint implements Component {
     public static final String TYPE_NAME = "Endpoint";
 
     private String path;
     private HttpMethod[] httpMethods;
     private Method endpointMethod;
-    private Endpoint endpoint;
+    private EndpointHandler endpointHandler;
     private Class requestBodyType;
     private Object controller;
 
@@ -78,8 +67,8 @@ public class EndpointComponent implements Component {
      * @param controller Controller object instanceto use
      * @return The fluent builder
      */
-    public static EndpointComponent forPath(String path, HttpMethod httpMethod, Method method, Object controller) {
-        return new EndpointComponent(path, new HttpMethod[] {httpMethod}, method, controller);
+    public static Endpoint forPath(String path, HttpMethod httpMethod, Method method, Object controller) {
+        return new Endpoint(path, new HttpMethod[] {httpMethod}, method, controller);
     }
 
     /**
@@ -93,8 +82,8 @@ public class EndpointComponent implements Component {
      * @param controller Controller object instanceto use
      * @return The fluent builder
      */
-    public static EndpointComponent forPath(String path, HttpMethod[] httpMethods,  Method method, Object controller) {
-        return (new EndpointComponent(path, httpMethods, method, controller));
+    public static Endpoint forPath(String path, HttpMethod[] httpMethods,  Method method, Object controller) {
+        return (new Endpoint(path, httpMethods, method, controller));
     }
 
     /**
@@ -103,11 +92,11 @@ public class EndpointComponent implements Component {
      *
      * @param path URL Path for the endpoint
      * @param httpMethod HTTP method this endpoint accepts
-     * @param endpoint Functional endpoint to invoke
+     * @param endpointHandler Functional endpoint to invoke
      * @return The fluent builder
      */
-    public static EndpointComponent forPath(String path, HttpMethod httpMethod, Endpoint endpoint) {
-        return new EndpointComponent(path, new HttpMethod[] {httpMethod}, endpoint);
+    public static Endpoint forPath(String path, HttpMethod httpMethod, EndpointHandler endpointHandler) {
+        return new Endpoint(path, new HttpMethod[] {httpMethod}, endpointHandler);
     }
 
     /**
@@ -116,12 +105,12 @@ public class EndpointComponent implements Component {
      *
      * @param path URL Path for the endpoint
      * @param httpMethod HTTP method this endpoint accepts
-     * @param endpoint Functional endpoint to invoke
+     * @param endpointHandler Functional endpoint to invoke
      * @param requestBodyType Type to marshall the incoming request to
      * @return The fluent builder
      */
-    public static EndpointComponent forPath(String path,  HttpMethod httpMethod, Endpoint endpoint, Class requestBodyType) {
-        return (new EndpointComponent(path, new HttpMethod[] {httpMethod}, endpoint, requestBodyType));
+    public static Endpoint forPath(String path,  HttpMethod httpMethod, EndpointHandler endpointHandler, Class requestBodyType) {
+        return (new Endpoint(path, new HttpMethod[] {httpMethod}, endpointHandler, requestBodyType));
     }
 
     /**
@@ -130,11 +119,11 @@ public class EndpointComponent implements Component {
      *
      * @param path URL Path for the endpoint
      * @param httpMethods HTTP methods this endpoint accepts
-     * @param endpoint Functional endpoint to invoke
+     * @param endpointHandler Functional endpoint to invoke
      * @return The fluent builder
      */
-    public static EndpointComponent forPath(String path, HttpMethod[] httpMethods, Endpoint endpoint) {
-        return (new EndpointComponent(path, httpMethods, endpoint));
+    public static Endpoint forPath(String path, HttpMethod[] httpMethods, EndpointHandler endpointHandler) {
+        return (new Endpoint(path, httpMethods, endpointHandler));
     }
 
     /**
@@ -143,15 +132,15 @@ public class EndpointComponent implements Component {
      *
      * @param path URL Path for the endpoint
      * @param httpMethods HTTP methods this endpoint accepts
-     * @param endpoint Functional endpoint to invoke
+     * @param endpointHandler Functional endpoint to invoke
      * @param requestBodyType Type to marshall the incoming request to
      * @return The fluent builder
      */
-    public static EndpointComponent forPath(String path, HttpMethod[] httpMethods, Endpoint endpoint, Class requestBodyType) {
-        return (new EndpointComponent(path, httpMethods, endpoint, requestBodyType));
+    public static Endpoint forPath(String path, HttpMethod[] httpMethods, EndpointHandler endpointHandler, Class requestBodyType) {
+        return (new Endpoint(path, httpMethods, endpointHandler, requestBodyType));
     }
 
-    private EndpointComponent(String path, HttpMethod[] httpMethods, Method endpointMethod, Object controller) {
+    private Endpoint(String path, HttpMethod[] httpMethods, Method endpointMethod, Object controller) {
         this.path = path;
         this.httpMethods = httpMethods;
         this.endpointMethod = endpointMethod;
@@ -159,17 +148,17 @@ public class EndpointComponent implements Component {
         this.requestBodyType = getRequestBodyTypeForMethod(endpointMethod);
     }
 
-    private EndpointComponent(String path, HttpMethod[] httpMethods, Endpoint endpoint) {
+    private Endpoint(String path, HttpMethod[] httpMethods, EndpointHandler endpointHandler) {
         this.path = path;
         this.httpMethods = httpMethods;
-        this.endpoint = endpoint;
+        this.endpointHandler = endpointHandler;
         this.requestBodyType = String.class;
     }
 
-    private EndpointComponent(String path, HttpMethod[] httpMethods, Endpoint endpoint, Class requestBodyType) {
+    private Endpoint(String path, HttpMethod[] httpMethods, EndpointHandler endpointHandler, Class requestBodyType) {
         this.path = path;
         this.httpMethods = httpMethods;
-        this.endpoint = endpoint;
+        this.endpointHandler = endpointHandler;
         this.requestBodyType = requestBodyType;
     }
 
@@ -177,8 +166,8 @@ public class EndpointComponent implements Component {
         return controller;
     }
 
-    public Endpoint getEndpoint() {
-        return endpoint;
+    public EndpointHandler getEndpointHandler() {
+        return endpointHandler;
     }
 
     public Class getRequestBodyType() {

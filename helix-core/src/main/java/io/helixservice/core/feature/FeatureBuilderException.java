@@ -22,36 +22,18 @@
  *
  */
 
-package io.helixservice.core.server;
+package io.helixservice.core.feature;
 
-/**
- * Helix Server State
- */
-public enum ServerState {
-   /**
-    * Server is stopped
-    */
-   STOPPED,
+public class FeatureBuilderException extends RuntimeException {
+    public FeatureBuilderException(String message) {
+        super(message);
+    }
 
-   /**
-    * Server is starting, features and components are being created
-    */
-   STARTING,
+    public FeatureBuilderException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-   /**
-    * Server has started, all features and components created.
-    */
-   STARTED,
-
-   /**
-    * Server is finishing in-flight requests. New requests served HTTP 599.
-    * This state lasts a configurable amount of time before continuing.
-    */
-   FINISHING,
-
-   /**
-    * Server is stopping, resources are being freed. Feature and component
-    * registries will be cleared. Vert.x is stopped.
-    */
-   STOPPING
+    public FeatureBuilderException(Throwable cause) {
+        super(cause);
+    }
 }

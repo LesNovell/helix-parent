@@ -1,14 +1,3 @@
-/*
- *  Copyright (c) 2016 Les Novell
- *  ------------------------------------------------------
- *   All rights reserved. This program and the accompanying materials
- *   are made available under the terms of the Eclipse Public License v1.0
- *   and Apache License v2.0 which accompanies this distribution.
- *
- *      The Apache License v2.0 is available at
- *      http://www.opensource.org/licenses/apache2.0.php
- *
- */
 
 /*
  * @author Les Novell
@@ -50,7 +39,7 @@ public class YamlConfigProviderUnitTest {
         ResourceLocator resourceLocator = mock(ClasspathResourceLocator.class);
         when(resourceLocator.getStream(Matchers.anyString())).thenReturn(Optional.of(byteArrayInputStream));
 
-        new ConfigProvider(new String[] {"default"}, "my.yaml",
+        new DefaultReloadableConfigProvider(new String[] {"default"}, "my.yaml",
                 0, () -> new ResourceLocator[] {resourceLocator},
                 () -> new PropertyResolver[] {});
     }
@@ -64,7 +53,7 @@ public class YamlConfigProviderUnitTest {
         when(resourceLocator.getStream(Matchers.anyString())).thenReturn(Optional.of(byteArrayInputStream));
 
         ConfigProvider provider =
-                new ConfigProvider(new String[] {"default"}, "my.yaml",
+                new DefaultReloadableConfigProvider(new String[] {"default"}, "my.yaml",
                         0, () -> new ResourceLocator[] {resourceLocator},
                         () -> new PropertyResolver[] {});
 
@@ -81,7 +70,7 @@ public class YamlConfigProviderUnitTest {
                 a -> Optional.of(new ByteArrayInputStream(yamlInput.getBytes())));
 
         ConfigProvider provider =
-                new ConfigProvider(new String[] {"default"}, "my.yaml",
+                new DefaultReloadableConfigProvider(new String[] {"default"}, "my.yaml",
                         0, () -> new ResourceLocator[] {resourceLocator},
                         () -> new PropertyResolver[] {});
 
@@ -100,7 +89,7 @@ public class YamlConfigProviderUnitTest {
                 a -> Optional.of(new ByteArrayInputStream("yaml.property: Hello".getBytes())));
 
         ConfigProvider provider =
-                new ConfigProvider(new String[] {"default"}, "my.yaml",
+                new DefaultReloadableConfigProvider(new String[] {"default"}, "my.yaml",
                         0, () -> new ResourceLocator[] {resourceLocator},
                         () -> new PropertyResolver[] {});
 
@@ -122,7 +111,7 @@ public class YamlConfigProviderUnitTest {
                 a -> Optional.of(new ByteArrayInputStream("yaml.property: Hello".getBytes())));
 
         ConfigProvider provider =
-                new ConfigProvider(new String[] {"default"}, "my.yaml",
+                new DefaultReloadableConfigProvider(new String[] {"default"}, "my.yaml",
                         0, () -> new ResourceLocator[] {resourceLocator},
                         () -> new PropertyResolver[] {});
 
@@ -155,7 +144,7 @@ public class YamlConfigProviderUnitTest {
                                         + "yaml.new: NewProperty").getBytes())));
 
         ConfigProvider subject =
-                new ConfigProvider(new String[] {"default","dev"}, "my.yaml",
+                new DefaultReloadableConfigProvider(new String[] {"default","dev"}, "my.yaml",
                         0, () -> new ResourceLocator[] {resourceLocator},
                         () -> new PropertyResolver[] {});
 

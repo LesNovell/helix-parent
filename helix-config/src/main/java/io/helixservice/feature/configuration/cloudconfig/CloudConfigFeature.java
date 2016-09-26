@@ -1,14 +1,3 @@
-/*
- *  Copyright (c) 2016 Les Novell
- *  ------------------------------------------------------
- *   All rights reserved. This program and the accompanying materials
- *   are made available under the terms of the Eclipse Public License v1.0
- *   and Apache License v2.0 which accompanies this distribution.
- *
- *      The Apache License v2.0 is available at
- *      http://www.opensource.org/licenses/apache2.0.php
- *
- */
 
 /*
  * @author Les Novell
@@ -27,6 +16,7 @@ package io.helixservice.feature.configuration.cloudconfig;
 import io.helixservice.core.feature.AbstractFeature;
 import io.helixservice.feature.configuration.ConfigProperty;
 import io.helixservice.feature.configuration.ConfigurationFeature;
+import io.helixservice.feature.configuration.provider.ConfigProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,9 +68,11 @@ import java.util.Optional;
  */
 public class CloudConfigFeature extends AbstractFeature {
     private static Logger LOG = LoggerFactory.getLogger(CloudConfigFeature.class);
+    private ConfigProvider configProvider;
 
-    public CloudConfigFeature() {
-        ConfigProperty cloudConfigEnabled = new ConfigProperty("spring.cloud.config.enabled", "true");
+    public CloudConfigFeature(ConfigProvider configProvider) {
+        this.configProvider = configProvider;
+        ConfigProperty cloudConfigEnabled = new ConfigProperty(configProvider, "spring.cloud.config.enabled", "true");
 
         if (cloudConfigEnabled.isTrue()) {
             LOG.info("Cloud Configuration feature is enabled");
@@ -91,14 +83,19 @@ public class CloudConfigFeature extends AbstractFeature {
         }
     }
 
+    @Override
+    public boolean shouldStartDuringBootstrapPhase() {
+        return true;
+    }
+
     private void registerCloudConfigProvider() {
-        String serviceName = new ConfigProperty("service.name").getValue();
+        String serviceName = new ConfigProperty(configProvider, "service.name").getValue();
         String cloudConfigUri = Optional.ofNullable(System.getenv("SPRING_CLOUD_CONFIG_URI"))
-                .orElse(new ConfigProperty("spring.cloud.config.uri").getValue());
+                .orElse(new ConfigProperty(configProvider, "spring.cloud.config.uri").getValue());
         String username = Optional.ofNullable(System.getenv("SPRING_CLOUD_CONFIG_USERNAME"))
-                .orElse(new ConfigProperty("spring.cloud.config.username").getValue());
+                .orElse(new ConfigProperty(configProvider, "spring.cloud.config.username").getValue());
         String password = Optional.ofNullable(System.getenv("SPRING_CLOUD_CONFIG_PASSWORD"))
-                .orElse(new ConfigProperty("spring.cloud.config.password").getValue());
+                .orElse(new ConfigProperty(configProvider, "spring.cloud.config.password").getValue());
         String httpBasicHeader = "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
         String serviceUrl = cloudConfigUri + "/" + serviceName;
 

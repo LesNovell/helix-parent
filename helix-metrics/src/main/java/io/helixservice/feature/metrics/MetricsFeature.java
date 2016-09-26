@@ -1,14 +1,3 @@
-/*
- *  Copyright (c) 2016 Les Novell
- *  ------------------------------------------------------
- *   All rights reserved. This program and the accompanying materials
- *   are made available under the terms of the Eclipse Public License v1.0
- *   and Apache License v2.0 which accompanies this distribution.
- *
- *      The Apache License v2.0 is available at
- *      http://www.opensource.org/licenses/apache2.0.php
- *
- */
 
 /*
  * @author Les Novell
@@ -29,8 +18,8 @@ import com.codahale.metrics.jvm.GarbageCollectorMetricSet;
 import com.codahale.metrics.jvm.MemoryUsageGaugeSet;
 import com.codahale.metrics.jvm.ThreadStatesGaugeSet;
 import io.helixservice.core.feature.AbstractFeature;
-import io.helixservice.core.server.Server;
-import io.helixservice.feature.restservice.controller.component.ControllerComponent;
+import io.helixservice.core.container.Container;
+import io.helixservice.feature.restservice.controller.component.Controller;
 import io.vertx.core.Vertx;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.eventbus.Message;
@@ -64,7 +53,7 @@ public class MetricsFeature extends AbstractFeature {
         metricRegistry.registerAll(new MemoryUsageGaugeSet());
 
         MetricsController metricsController = new MetricsController(metricRegistry);
-        register(ControllerComponent.fromAnnotationsOn(metricsController));
+        register(Controller.fromAnnotationsOn(metricsController));
     }
 
     public MetricRegistry metricRegistry() {
@@ -72,8 +61,8 @@ public class MetricsFeature extends AbstractFeature {
     }
 
     @Override
-    public void start(Server server) {
-        addEventBusConsumers(server.getVertx().get());
+    public void start(Container container) {
+        addEventBusConsumers(container.getVertx().get());
     }
 
     private void addEventBusConsumers(Vertx vertx) {

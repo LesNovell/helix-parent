@@ -1,14 +1,3 @@
-/*
- *  Copyright (c) 2016 Les Novell
- *  ------------------------------------------------------
- *   All rights reserved. This program and the accompanying materials
- *   are made available under the terms of the Eclipse Public License v1.0
- *   and Apache License v2.0 which accompanies this distribution.
- *
- *      The Apache License v2.0 is available at
- *      http://www.opensource.org/licenses/apache2.0.php
- *
- */
 
 /*
  * @author Les Novell
@@ -36,9 +25,6 @@ public class DefaultAccessLogFormatter extends AbstractAccessLogFormatter {
     private static final String API_KEY_PARAMETER = "api_key";
     private static final String REFERRER_HEADER = "referrer";
     private static final String USER_AGENT_HEADER = "user-agent";
-
-    public DefaultAccessLogFormatter() {
-    }
 
     /**
      * {@inheritDoc}

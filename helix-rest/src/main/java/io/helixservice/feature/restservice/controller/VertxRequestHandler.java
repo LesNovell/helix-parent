@@ -1,14 +1,3 @@
-/*
- *  Copyright (c) 2016 Les Novell
- *  ------------------------------------------------------
- *   All rights reserved. This program and the accompanying materials
- *   are made available under the terms of the Eclipse Public License v1.0
- *   and Apache License v2.0 which accompanies this distribution.
- *
- *      The Apache License v2.0 is available at
- *      http://www.opensource.org/licenses/apache2.0.php
- *
- */
 
 /*
  * @author Les Novell
@@ -26,9 +15,9 @@ package io.helixservice.feature.restservice.controller;
 
 import co.paralleluniverse.fibers.Suspendable;
 import io.helixservice.core.util.VertxTypeConverter;
-import io.helixservice.feature.restservice.controller.component.EndpointComponent;
+import io.helixservice.feature.restservice.controller.component.Endpoint;
 import io.helixservice.feature.restservice.controller.metrics.RequestMetricsPublisher;
-import io.helixservice.feature.restservice.error.ErrorHandler;
+import io.helixservice.feature.restservice.error.ErrorHandlerFunction;
 import io.helixservice.feature.restservice.error.ErrorHandlerRegistry;
 import io.helixservice.feature.restservice.marshal.Marshaller;
 import io.helixservice.feature.restservice.marshal.Message;
@@ -56,7 +45,7 @@ import java.util.List;
 public class VertxRequestHandler implements Handler<RoutingContext> {
     public static final String CONTENT_TYPE = "content-type";
     private static final Logger LOG = LoggerFactory.getLogger(VertxRequestHandler.class);
-    private EndpointComponent endpointComponent;
+    private Endpoint endpoint;
 
     private String path;
     private EventBus eventBus;
@@ -67,17 +56,17 @@ public class VertxRequestHandler implements Handler<RoutingContext> {
     /**
      * Create an EndpointHandler
      *
-     * @param endpointComponent Endpoint definition
+     * @param endpoint Endpoint definition
      * @param marshaller Marshaller to be used for this endpoint handler
      * @param errorHandlerRegistry Registry of error handlers
      * @param eventBus Event bus for publishing controller metrics
      */
-    public VertxRequestHandler(EndpointComponent endpointComponent,
+    public VertxRequestHandler(Endpoint endpoint,
             Marshaller marshaller, ErrorHandlerRegistry errorHandlerRegistry, EventBus eventBus) {
-        this.endpointComponent = endpointComponent;
+        this.endpoint = endpoint;
         this.marshaller = marshaller;
         this.errorHandlerRegistry = errorHandlerRegistry;
-        this.path = endpointComponent.getPath();
+        this.path = endpoint.getPath();
         this.eventBus = eventBus;
     }
 
@@ -104,12 +93,12 @@ public class VertxRequestHandler implements Handler<RoutingContext> {
                     vertxRequest.version().name());
 
             Response response;
-            Method method = endpointComponent.getEndpointMethod();
+            Method method = endpoint.getEndpointMethod();
             if (method != null) {
-                response = (Response) method.invoke(endpointComponent.getController(), request);
+                response = (Response) method.invoke(endpoint.getController(), request);
             } else {
-                Endpoint endpoint = endpointComponent.getEndpoint();
-                response = endpoint.handle(request);
+                EndpointHandler endpointHandler = this.endpoint.getEndpointHandler();
+                response = endpointHandler.handle(request);
             }
 
             //noinspection unchecked
@@ -142,7 +131,7 @@ public class VertxRequestHandler implements Handler<RoutingContext> {
 
         byte[] body = event.getBody().getBytes();
         List<String> contentTypeHeaders = event.request().headers().getAll(CONTENT_TYPE);
-        result = marshaller.unmarshal(endpointComponent.getRequestBodyType(), new Message(body, contentTypeHeaders));
+        result = marshaller.unmarshal(endpoint.getRequestBodyType(), new Message(body, contentTypeHeaders));
 
         return result;
     }
@@ -152,7 +141,7 @@ public class VertxRequestHandler implements Handler<RoutingContext> {
     }
 
     private int handleErrorResponse(RoutingContext event, Request request, Throwable t) {
-        ErrorHandler<Throwable> errorHandler = errorHandlerRegistry.errorHandlerFor(t);
+        ErrorHandlerFunction<Throwable> errorHandler = errorHandlerRegistry.errorHandlerFor(t);
 
         Response<?> errorResponse = errorHandler.mapToErrorResponse(request, t);
         Object responseBody = errorResponse.getResponseBody();

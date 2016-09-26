@@ -1,14 +1,3 @@
-/*
- *  Copyright (c) 2016 Les Novell
- *  ------------------------------------------------------
- *   All rights reserved. This program and the accompanying materials
- *   are made available under the terms of the Eclipse Public License v1.0
- *   and Apache License v2.0 which accompanies this distribution.
- *
- *      The Apache License v2.0 is available at
- *      http://www.opensource.org/licenses/apache2.0.php
- *
- */
 
 /*
  * @author Les Novell
@@ -24,7 +13,7 @@
 
 package io.helixservice.feature.accesslog;
 
-import io.helixservice.feature.configuration.ConfigProperty;
+import io.helixservice.feature.configuration.provider.ConfigProvider;
 import io.helixservice.feature.configuration.provider.ConfigProviderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +28,12 @@ import java.util.Scanner;
 public abstract class AbstractAccessLogFormatter implements AccessLogFormatter {
     private static Logger LOG = LoggerFactory.getLogger(AbstractAccessLogFormatter.class);
     private String hostname = null;
+    private ConfigProvider configProvider;
+
+    @Override
+    public void setConfigProvider(ConfigProvider configProvider) {
+        this.configProvider = configProvider;
+    }
 
     /**
      * Resolve and get the current host name.
@@ -59,7 +54,7 @@ public abstract class AbstractAccessLogFormatter implements AccessLogFormatter {
 
     private synchronized String resolveHostname() {
         try {
-            hostname = new ConfigProperty("accesslog.hostname").getValue();
+            hostname = configProvider.propertyByName("access-log.hostname").getValue();
         } catch (ConfigProviderException e) {
             hostname = null;
         }

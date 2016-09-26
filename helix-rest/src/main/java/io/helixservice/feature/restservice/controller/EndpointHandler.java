@@ -1,14 +1,3 @@
-/*
- *  Copyright (c) 2016 Les Novell
- *  ------------------------------------------------------
- *   All rights reserved. This program and the accompanying materials
- *   are made available under the terms of the Eclipse Public License v1.0
- *   and Apache License v2.0 which accompanies this distribution.
- *
- *      The Apache License v2.0 is available at
- *      http://www.opensource.org/licenses/apache2.0.php
- *
- */
 
 /*
  * @author Les Novell
@@ -30,7 +19,7 @@ import co.paralleluniverse.fibers.SuspendExecution;
  * Functional interface for handling REST requests
  */
 @FunctionalInterface
-public interface Endpoint {
+public interface EndpointHandler {
     /**
      * Handle a REST request
      *

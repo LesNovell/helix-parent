@@ -1,14 +1,3 @@
-/*
- *  Copyright (c) 2016 Les Novell
- *  ------------------------------------------------------
- *   All rights reserved. This program and the accompanying materials
- *   are made available under the terms of the Eclipse Public License v1.0
- *   and Apache License v2.0 which accompanies this distribution.
- *
- *      The Apache License v2.0 is available at
- *      http://www.opensource.org/licenses/apache2.0.php
- *
- */
 
 /*
  * @author Les Novell
@@ -25,13 +14,14 @@
 package io.helixservice.feature.restservice;
 
 import io.helixservice.core.feature.Feature;
-import io.helixservice.core.server.Server;
-import io.helixservice.core.server.ServerState;
+import io.helixservice.core.container.Container;
+import io.helixservice.core.container.ContainerState;
 import io.helixservice.feature.configuration.ConfigProperty;
+import io.helixservice.feature.configuration.provider.ConfigProvider;
 import io.helixservice.feature.restservice.controller.VertxRequestHandler;
 import io.helixservice.feature.restservice.controller.HttpMethod;
-import io.helixservice.feature.restservice.controller.component.EndpointComponent;
-import io.helixservice.feature.restservice.error.ErrorHandler;
+import io.helixservice.feature.restservice.controller.component.Endpoint;
+import io.helixservice.feature.restservice.error.ErrorHandlerFunction;
 import io.helixservice.feature.restservice.error.ErrorHandlerRegistry;
 import io.helixservice.feature.restservice.filter.FilterHandler;
 import io.helixservice.feature.restservice.filter.component.FilterComponent;
@@ -59,18 +49,20 @@ public class RestServiceVerticle extends SyncVerticle {
     private static final Logger LOG = LoggerFactory.getLogger(RestServiceVerticle.class);
     private static final int FINISHING_STATUS_CODE = 599;
 
-    private final Server server;
+    private ConfigProvider configProvider;
+    private final Container container;
     private final Router router;
 
-    public RestServiceVerticle(Server server, Router router) {
-        this.server = server;
+    public RestServiceVerticle(ConfigProvider configProvider, Container container, Router router) {
+        this.configProvider = configProvider;
+        this.container = container;
         this.router = router;
     }
 
     @Override
     public void start() throws Exception {
         try {
-            ConfigProperty port = new ConfigProperty("vertx.server.port");
+            ConfigProperty port = new ConfigProperty(configProvider, "vertx.server.port");
 
             HttpServerOptions serverOptions = new HttpServerOptions().setPort(port.asInt());
             HttpServer httpServer = vertx.createHttpServer(serverOptions);
@@ -87,7 +79,7 @@ public class RestServiceVerticle extends SyncVerticle {
 
     private Handler<RoutingContext> finisher(BodyHandler bodyHandler) {
         return routingContext -> {
-            if (server.getServerState() == ServerState.FINISHING) {
+            if (container.getContainerState() == ContainerState.FINISHING) {
                 routingContext.response().setStatusCode(FINISHING_STATUS_CODE).end();
             } else {
                 bodyHandler.handle(routingContext);
@@ -96,7 +88,7 @@ public class RestServiceVerticle extends SyncVerticle {
     }
 
     private void configureFeatures() {
-        for (Feature feature : server.getFeatures()) {
+        for (Feature feature : container.getFeatures()) {
             configureFilters(feature);
             configureEndpoints(feature);
         }
@@ -107,33 +99,33 @@ public class RestServiceVerticle extends SyncVerticle {
     }
 
     private void configureFilters(Feature feature) {
-        Iterable<FilterComponent> filters = feature.findByType(FilterComponent.TYPE_NAME);
+        Iterable<FilterComponent> filters = feature.findComponentByType(FilterComponent.TYPE_NAME);
         for (FilterComponent filter : filters) {
             router.routeWithRegex(filter.getPathRegex()).handler(fiberHandler(new FilterHandler(filter.getFilter())));
         }
     }
 
     private void configureEndpoints(Feature feature) {
-        Collection<EndpointComponent> endpoints = feature.findByType(EndpointComponent.TYPE_NAME);
+        Collection<Endpoint> endpoints = feature.findComponentByType(Endpoint.TYPE_NAME);
 
-        for (EndpointComponent endpointComponent : endpoints) {
-            registerEndpoint(feature, endpointComponent);
+        for (Endpoint endpoint : endpoints) {
+            registerEndpoint(feature, endpoint);
         }
     }
 
-    private void registerEndpoint(Feature feature, EndpointComponent endpointComponent) {
-        Marshaller marshaller = feature.findByType(Marshaller.TYPE_NAME, Marshaller.DEFAULT);
-        Collection<ErrorHandler> errorHandlers = feature.findByType(ErrorHandler.TYPE_NAME);
+    private void registerEndpoint(Feature feature, Endpoint endpoint) {
+        Marshaller marshaller = feature.findComponentByType(Marshaller.TYPE_NAME, Marshaller.DEFAULT);
+        Collection<ErrorHandlerFunction> errorHandlers = feature.findComponentByType(ErrorHandlerFunction.TYPE_NAME);
 
         ErrorHandlerRegistry errorHandlerRegistry = new ErrorHandlerRegistry();
         errorHandlerRegistry.addErrorHandlers(errorHandlers);
 
-        VertxRequestHandler handler = new VertxRequestHandler(endpointComponent,
+        VertxRequestHandler handler = new VertxRequestHandler(endpoint,
                 marshaller, errorHandlerRegistry,
                 vertx.eventBus());
 
-        for (HttpMethod supportedMethod : endpointComponent.getHttpMethods()) {
-            router.route(toVertxHttpMethod(supportedMethod), endpointComponent.getPath())
+        for (HttpMethod supportedMethod : endpoint.getHttpMethods()) {
+            router.route(toVertxHttpMethod(supportedMethod), endpoint.getPath())
                     .handler(fiberHandler(handler));
         }
     }

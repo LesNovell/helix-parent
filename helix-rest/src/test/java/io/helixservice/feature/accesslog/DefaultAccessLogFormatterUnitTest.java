@@ -1,14 +1,3 @@
-/*
- *  Copyright (c) 2016 Les Novell
- *  ------------------------------------------------------
- *   All rights reserved. This program and the accompanying materials
- *   are made available under the terms of the Eclipse Public License v1.0
- *   and Apache License v2.0 which accompanies this distribution.
- *
- *      The Apache License v2.0 is available at
- *      http://www.opensource.org/licenses/apache2.0.php
- *
- */
 
 /*
  * @author Les Novell
@@ -26,6 +15,8 @@ package io.helixservice.feature.accesslog;
 
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
+import io.helixservice.feature.configuration.provider.ConfigProvider;
+import io.helixservice.feature.configuration.provider.Property;
 import io.helixservice.feature.restservice.controller.HttpMethod;
 import io.helixservice.feature.restservice.controller.Request;
 import io.helixservice.feature.restservice.controller.Response;
@@ -49,12 +40,14 @@ public class DefaultAccessLogFormatterUnitTest {
     FilterContext filterContext = mock(FilterContext.class);
     Request request = mock(Request.class);
     Response<byte[]> response = mock(Response.class);
+    ConfigProvider configProvider = mock(ConfigProvider.class);
 
     @Before
     public void setUp() {
         when(filterContext.getRequest()).thenReturn(request);
         when(filterContext.getResponse()).thenReturn(response);
         subject = new DefaultAccessLogFormatter();
+        subject.setConfigProvider(configProvider);
     }
 
     @Test
@@ -117,6 +110,8 @@ public class DefaultAccessLogFormatterUnitTest {
         Multimap responseHeaders = LinkedListMultimap.create();
         when(response.getHeaders()).thenReturn(responseHeaders);
         when(response.getHttpStatusCode()).thenReturn(httpStatusCode);
+
+        when(configProvider.propertyByName("access-log.hostname")).thenReturn(new Property("accesslog.hostname", "localhost", "localhost"));
 
         when(request.getHttpVersion()).thenReturn((httpVersion.isPresent()) ? httpVersion.get() : null);
 
